@@ -84,7 +84,7 @@ export class CreateScreen extends React.Component<IProps<{}, {id?: number}>> {
           }
           rightControls={[
             <TopNavigationAction
-              icon={() => <Icon name="person-add-outline" />}
+              icon={() => <Icon name="people-outline" />}
               onPress={() => this.addTeamPerson()}
             />,
             <TopNavigationAction
