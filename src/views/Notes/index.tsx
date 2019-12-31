@@ -34,7 +34,7 @@ export class NotesScreen extends React.Component<IProps> {
           alignment="center"
           rightControls={[
             <TopNavigationAction
-              icon={() => <Icon name="plus-square-outline" />}
+              icon={() => <Icon name="plus-outline" />}
               onPress={() => this.createNotes()}
             />,
             <TopNavigationAction

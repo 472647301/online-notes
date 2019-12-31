@@ -62,6 +62,13 @@ export class CreateScreen extends React.Component<IProps<{}, {id?: number}>> {
 
   public _keyboardDidHide(e: KeyboardEvent) {}
 
+  /**
+   * 添加团队协作
+   */
+  public addTeamPerson() {}
+
+  public releaseNotes() {}
+
   public render() {
     const {navigation} = this.props;
     const {isNew, title, content, height} = this.state;
@@ -75,6 +82,16 @@ export class CreateScreen extends React.Component<IProps<{}, {id?: number}>> {
               onPress={() => navigation.goBack()}
             />
           }
+          rightControls={[
+            <TopNavigationAction
+              icon={() => <Icon name="person-add-outline" />}
+              onPress={() => this.addTeamPerson()}
+            />,
+            <TopNavigationAction
+              icon={() => <Icon name="checkmark-square-2-outline" />}
+              onPress={() => this.releaseNotes()}
+            />,
+          ]}
         />
         <Layout style={styles.main}>
           <Text style={styles.title}>标题</Text>
