@@ -27,9 +27,6 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.message) {
-      showMessage({type: 'danger', message: error.message});
-    }
     if (error.message && error.message.indexOf('401') && $route) {
       cookies.save('token', '');
       $route.dispatch(
@@ -37,6 +34,10 @@ api.interceptors.response.use(
           routeName: 'Login',
         }),
       );
+    } else {
+      if (error.message) {
+        showMessage({type: 'danger', message: error.message});
+      }
     }
     return error;
   },
