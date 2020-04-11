@@ -46,9 +46,9 @@ export class WelcomeScreen extends React.Component<RouteProps> {
   };
 
   public fetchLoginStatus = async () => {
-    const res = await apiGet<{email: string}>('/user/info');
+    const res = await apiGet<{email: string; nickname: string}>('/user/info');
     if (res && res.success) {
-      this.props.stores.changeEmail(res.data.email);
+      this.props.stores.changeEmail(res.data.email, res.data.nickname);
       this.timer = setInterval(this.runTimer, 1000);
     }
   };

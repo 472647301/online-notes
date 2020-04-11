@@ -30,7 +30,7 @@ api.interceptors.response.use(
     if (error.message) {
       showMessage({type: 'danger', message: error.message});
     }
-    if (error.message && error.message.indexOf('403') && $route) {
+    if (error.message && error.message.indexOf('401') && $route) {
       cookies.save('token', '');
       $route.dispatch(
         NavigationActions.navigate({

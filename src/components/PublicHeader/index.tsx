@@ -1,15 +1,23 @@
 import React from 'react';
-import {View, Text, Image} from 'react-native';
-import {StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, Image, ImageSourcePropType} from 'react-native';
+import {StyleSheet, TouchableOpacity, ImageStyle} from 'react-native';
 import {icons} from '../../icons';
 
 export class PublicHeader extends React.PureComponent<{
   title?: string;
   onClickLeft?: () => void;
   onClickRight?: () => void;
+  rightIcon?: ImageSourcePropType;
+  rightIconStyle?: ImageStyle;
 }> {
   public render() {
-    const {title, onClickLeft, onClickRight} = this.props;
+    const {
+      title,
+      onClickLeft,
+      onClickRight,
+      rightIcon,
+      rightIconStyle,
+    } = this.props;
     return (
       <View style={styles.head}>
         <TouchableOpacity
@@ -30,7 +38,10 @@ export class PublicHeader extends React.PureComponent<{
           disabled={!Boolean(onClickRight)}
           onPress={onClickRight}>
           {onClickRight ? (
-            <Image source={icons.head_add} style={styles.head_right_icon} />
+            <Image
+              source={rightIcon ? rightIcon : icons.head_add}
+              style={rightIconStyle ? rightIconStyle : styles.head_right_icon}
+            />
           ) : null}
         </TouchableOpacity>
       </View>

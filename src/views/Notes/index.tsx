@@ -8,6 +8,10 @@ import {PublicHeader} from '../../components/PublicHeader';
 import {NavigationCommonTabOptions} from 'react-navigation-tabs/src/types';
 import {icons} from '../../icons';
 import {PublicView, ViewStatus} from '../../components/PublicView';
+import {PublicAlert} from '../../components/PublicAlert';
+import {apiPost} from '../../api';
+import {showMessage} from 'react-native-flash-message';
+import {PublicUpdate} from '../../components/PublicUpdate';
 
 /**
  * Template
@@ -18,6 +22,9 @@ export class NotesScreen extends React.Component<RouteProps> {
   public state: IState = {
     loading: 'Show',
   };
+
+  public alert = new PublicAlert();
+  public update = new PublicUpdate();
 
   static navigationOptions(): NavigationCommonTabOptions {
     return {
@@ -31,9 +38,69 @@ export class NotesScreen extends React.Component<RouteProps> {
     };
   }
 
-  public onDelete = (id: string) => {};
+  public onDelete = (id: string) => {
+    this.alert.show({
+      message: '您确认要删除这条笔记吗？',
+      onConfirm: () => this.onConfirmDelete(id),
+    });
+  };
 
-  public addMember = (id: string) => {};
+  public addMember = (id: string) => {
+    this.update.show({
+      title: '添加成员',
+      placeholder: '请输入新成员邮箱地址',
+      onConfirm: (val) => this.onConfirmAddMember(val, id),
+    });
+  };
+
+  public removeMember = (id: string) => {
+    this.update.show({
+      title: '移除成员',
+      placeholder: '请输入成员邮箱地址',
+      onConfirm: (val) => this.onConfirmRemoveMember(val, id),
+    });
+  };
+
+  public onConfirmDelete = async (id: string) => {
+    this.setState({loading: 'Show'});
+    const res = await apiPost('/notes/remove', {id});
+    this.setState({loading: 'Hide'});
+    if (res && !res.success) {
+      showMessage({type: 'danger', message: res.error});
+    }
+  };
+
+  public onConfirmAddMember = async (val: string, id: string) => {
+    const reg = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+    if (!reg.test(val)) {
+      showMessage({type: 'danger', message: '请输入正确的邮箱'});
+      return false;
+    }
+    const res = await apiPost('/notes/member/add', {id, email: val});
+    if (res && !res.success) {
+      showMessage({type: 'danger', message: res.error});
+    }
+    if (res && res.success) {
+      showMessage({type: 'success', message: '添加成功'});
+    }
+    return Boolean(res && res.success);
+  };
+
+  public onConfirmRemoveMember = async (val: string, id: string) => {
+    const reg = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+    if (!reg.test(val)) {
+      showMessage({type: 'danger', message: '请输入正确的邮箱'});
+      return false;
+    }
+    const res = await apiPost('/notes/member/delete', {id, email: val});
+    if (res && !res.success) {
+      showMessage({type: 'danger', message: res.error});
+    }
+    if (res && res.success) {
+      showMessage({type: 'success', message: '移除成功'});
+    }
+    return Boolean(res && res.success);
+  };
 
   public componentDidMount() {
     this.props.stores.fetchNotesList().then(() => {
@@ -98,6 +165,12 @@ export class NotesScreen extends React.Component<RouteProps> {
                           onPress={() => this.addMember(e._id)}>
                           <Text style={styles.item_footer_text}>添加成员</Text>
                         </TouchableOpacity>
+                        <View style={styles.item_footer_line} />
+                        <TouchableOpacity
+                          style={styles.item_footer_left}
+                          onPress={() => this.removeMember(e._id)}>
+                          <Text style={styles.item_footer_text}>移除成员</Text>
+                        </TouchableOpacity>
                       </View>
                     ) : (
                       <View style={styles.item_footer}>
@@ -150,11 +223,11 @@ const styles = StyleSheet.create({
   },
   item: {
     height: 125,
-    marginBottom: 10,
+    marginBottom: 15,
     marginLeft: 15,
     marginRight: 15,
-    // borderWidth: 1,
-    // borderColor: '#2F2F31',
+    borderTopWidth: 1,
+    borderTopColor: '#2F2F31',
     backgroundColor: '#18181A',
   },
   item_wrap: {

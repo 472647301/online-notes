@@ -10,6 +10,12 @@ import {apiPost} from '../../api';
 import {showMessage} from 'react-native-flash-message';
 import {PublicView, ViewStatus} from '../../components/PublicView';
 import {cookies} from '../../utils';
+import {
+  EmitterSubscription,
+  Platform,
+  KeyboardEvent,
+  Keyboard,
+} from 'react-native';
 
 /**
  * Template
@@ -26,8 +32,17 @@ export class LoginScreen extends React.Component<RouteProps, IState> {
       code: '',
       password: '',
       status: 'Hide',
+      height: 0,
     };
   }
+
+  private keyboardShow: EmitterSubscription | null = null;
+
+  public keyboardDidShow = (e: KeyboardEvent) => {
+    if (Platform.OS === 'ios') {
+      this.setState({height: e.endCoordinates.height});
+    }
+  };
 
   public changeType = () => {
     const {type} = this.state;
@@ -78,78 +93,89 @@ export class LoginScreen extends React.Component<RouteProps, IState> {
     this.setState({status: 'Show'});
     const res = await apiPost<{token: string}>(url, params);
     this.setState({status: 'Hide'});
-    console.log(res);
     if (res && res.success) {
-      cookies.save('token', res.data.token);
+      await cookies.save('token', res.data.token);
+      this.props.stores.changeEmail(email, email);
       this.props.navigation.navigate('Main');
     }
   };
 
+  public componentDidMount() {
+    this.keyboardShow = Keyboard.addListener(
+      'keyboardDidShow',
+      this.keyboardDidShow,
+    );
+  }
+
+  public componentWillUnmount() {
+    if (this.keyboardShow) {
+      this.keyboardShow.remove();
+    }
+  }
+
   public render() {
-    const {type, status} = this.state;
+    const {type, status, height} = this.state;
     const isLogin = type === 'LOGIN';
     return (
       <SafeAreaView style={styles.wrapp}>
         <PublicHeader title={type === 'LOGIN' ? '登录' : '注册'} />
-        <View style={styles.main}>
-          <PublicView status={status}>
-            <View style={styles.list}>
+        <PublicView status={status} style={styles.main}>
+          <View style={{backgroundColor: '#2B2B2D'}}>
+            <View style={styles.item}>
+              <Image style={styles.item_icon} source={icons.email} />
+              <TextInput
+                autoFocus={true}
+                style={styles.item_input}
+                placeholder={'邮箱帐号'}
+                placeholderTextColor={'#fff'}
+                onChangeText={(text) => this.setState({email: text})}
+              />
+            </View>
+            <View style={styles.item_line} />
+            {isLogin ? null : (
               <View style={styles.item}>
-                <Image style={styles.item_icon} source={icons.email} />
+                <Image style={styles.item_icon} source={icons.code} />
                 <TextInput
                   style={styles.item_input}
-                  placeholder={'邮箱帐号'}
+                  placeholder={'邮箱验证码'}
                   placeholderTextColor={'#fff'}
-                  onChangeText={(text) => this.setState({email: text})}
+                  keyboardType={'numeric'}
+                  onChangeText={(text) => this.setState({code: text})}
                 />
+                <TouchableOpacity
+                  disabled={!!this.state.timer}
+                  style={styles.item_button}
+                  onPress={() => {}}>
+                  <Text style={styles.item_button_text}>
+                    {this.state.timer ? `已发送` : '发送'}
+                  </Text>
+                </TouchableOpacity>
               </View>
-              <View style={styles.item_line} />
-              {isLogin ? null : (
-                <View style={styles.item}>
-                  <Image style={styles.item_icon} source={icons.code} />
-                  <TextInput
-                    style={styles.item_input}
-                    placeholder={'邮箱验证码'}
-                    placeholderTextColor={'#fff'}
-                    keyboardType={'numeric'}
-                    onChangeText={(text) => this.setState({code: text})}
-                  />
-                  <TouchableOpacity
-                    disabled={!!this.state.timer}
-                    style={styles.item_button}
-                    onPress={() => {}}>
-                    <Text style={styles.item_button_text}>
-                      {this.state.timer ? `已发送` : '发送'}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-              {isLogin ? null : <View style={styles.item_line} />}
-              <View style={styles.item}>
-                <Image style={styles.password} source={icons.password} />
-                <TextInput
-                  style={styles.item_input}
-                  placeholder={'密码'}
-                  placeholderTextColor={'#fff'}
-                  onChangeText={(text) => this.setState({password: text})}
-                />
-              </View>
+            )}
+            {isLogin ? null : <View style={styles.item_line} />}
+            <View style={styles.item}>
+              <Image style={styles.password} source={icons.password} />
+              <TextInput
+                style={styles.item_input}
+                placeholder={'密码'}
+                placeholderTextColor={'#fff'}
+                onChangeText={(text) => this.setState({password: text})}
+              />
             </View>
-            <View style={styles.register}>
-              <View style={{flex: 1}} />
-              <Text style={styles.register_right} onPress={this.changeType}>
-                {isLogin ? '没有账号？立即注册' : '已经账号？去登录'}
-              </Text>
-            </View>
-            <TouchableOpacity
-              style={styles.footer_button}
-              onPress={this.submit}>
-              <Text style={styles.footer_button_text}>
-                {isLogin ? '登录' : '注册'}
-              </Text>
-            </TouchableOpacity>
-          </PublicView>
-        </View>
+          </View>
+          <View style={styles.register}>
+            <View style={{flex: 1}} />
+            <Text style={styles.register_right} onPress={this.changeType}>
+              {isLogin ? '没有账号？立即注册' : '已经账号？去登录'}
+            </Text>
+          </View>
+          <TouchableOpacity style={styles.footer_button} onPress={this.submit}>
+            <Text style={styles.footer_button_text}>
+              {isLogin ? '登录' : '注册'}
+            </Text>
+          </TouchableOpacity>
+        </PublicView>
+        <View style={{height: height}} />
       </SafeAreaView>
     );
   }
@@ -162,6 +188,7 @@ type IState = {
   code: string;
   password: string;
   status: ViewStatus;
+  height: number;
 };
 
 const styles = StyleSheet.create({
@@ -171,13 +198,10 @@ const styles = StyleSheet.create({
   },
   main: {
     flex: 1,
+    paddingLeft: 30,
+    paddingRight: 30,
+    paddingTop: 30,
     backgroundColor: 'rgba(0,0,0,0.18)',
-  },
-  list: {
-    marginLeft: 30,
-    marginRight: 30,
-    marginTop: 30,
-    backgroundColor: '#2B2B2D',
   },
   item: {
     height: 56,
@@ -231,8 +255,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 4,
     flexDirection: 'row',
-    marginLeft: 30,
-    marginRight: 30,
   },
   footer_button_text: {
     color: '#fff',
@@ -242,8 +264,6 @@ const styles = StyleSheet.create({
     height: 48,
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 30,
-    marginRight: 30,
     marginBottom: 10,
   },
   register_right: {

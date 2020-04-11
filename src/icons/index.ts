@@ -13,4 +13,7 @@ export const icons = {
   password: require('./source/password.png'),
   error_icon: require('./source/error_icon.png'),
   error_wift: require('./source/error_wift.png'),
+  icon_x: require('./source/icon_x.png'),
+  edit: require('./source/edit.png'),
+  arrow_right: require('./source/arrow_right.png'),
 };
