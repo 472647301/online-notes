@@ -80,6 +80,8 @@ export class CreateScreen extends React.Component<
   public keyboardDidShow = (e: KeyboardEvent) => {
     if (Platform.OS === 'ios') {
       this.setState({height: e.endCoordinates.height});
+    } else {
+      this.setState({height: e.endCoordinates.screenY - 100});
     }
   };
 
@@ -98,6 +100,9 @@ export class CreateScreen extends React.Component<
     this.setState({loading: 'Show'});
     const res = await apiPost(url, params);
     this.setState({loading: 'Hide'});
+    if (res && !res.success) {
+      return showMessage({type: 'danger', message: res.error});
+    }
     if (res && res.success) {
       showMessage({type: 'success', message: '提交成功'});
       this.setState({title: '', content: ''});
@@ -188,7 +193,9 @@ export class CreateScreen extends React.Component<
             <Text style={styles.footer_button_text}>提交</Text>
           </TouchableOpacity>
         </PublicView>
-        <View style={{height: height}} />
+        {Platform.OS === 'ios' ? (
+          <View style={{height: height, backgroundColor: 'rgba(0,0,0,0.18)'}} />
+        ) : null}
       </SafeAreaView>
     );
   }
@@ -231,6 +238,9 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 14,
     fontWeight: '600',
+    textAlignVertical: 'top',
+    paddingTop: 0,
+    paddingBottom: 0,
   },
   footer_button: {
     height: 48,

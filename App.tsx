@@ -13,9 +13,14 @@ import {StatusBar} from 'react-native';
 import {AppNavigator} from './src/routes';
 import {ModalLayers} from 'react-native-byron-modal';
 import FlashMessage from 'react-native-flash-message';
+import Orientation from 'react-native-orientation-locker';
 import {Provider} from 'mobx-react';
 
 class App extends React.Component {
+  public componentDidMount() {
+    Orientation.lockToPortrait();
+  }
+  
   public render() {
     return (
       <Provider stores={stores}>

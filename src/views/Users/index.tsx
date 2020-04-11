@@ -72,6 +72,9 @@ export class UsersScreen extends React.Component<RouteProps> {
       '/user/nickname',
       {nickname: val},
     );
+    if (res && !res.success) {
+      showMessage({type: 'danger', message: res.error});
+    }
     if (res && res.success) {
       this.props.stores.changeEmail(res.data.email, res.data.nickname);
     }
@@ -80,7 +83,7 @@ export class UsersScreen extends React.Component<RouteProps> {
 
   public render() {
     const {loading} = this.state;
-    const {stores} = this.props;
+    const {stores, navigation} = this.props;
     return (
       <SafeAreaView style={styles.wrapp}>
         <PublicHeader
@@ -145,6 +148,18 @@ export class UsersScreen extends React.Component<RouteProps> {
                 </Text>
               </View>
             </View>
+            <View style={styles.item_line} />
+            <TouchableOpacity
+              style={styles.item}
+              onPress={() => navigation.navigate('Password')}>
+              <View style={styles.item_left}>
+                <Text style={styles.item_left_text}>密码</Text>
+              </View>
+              <View style={styles.item_right}>
+                <Text style={styles.item_right_text}>{'修改'}</Text>
+                <Image style={styles.arrow_right} source={icons.arrow_right} />
+              </View>
+            </TouchableOpacity>
           </View>
           {/* <TouchableOpacity style={styles.footer_button}>
             <Text style={styles.footer_button_text}>{'退出'}</Text>
@@ -229,5 +244,10 @@ const styles = StyleSheet.create({
     height: 12,
     marginLeft: 5,
     marginTop: -2,
+  },
+  arrow_right: {
+    width: 8,
+    height: 15,
+    marginLeft: 10,
   },
 });

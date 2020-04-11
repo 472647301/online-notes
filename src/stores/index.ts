@@ -77,7 +77,7 @@ class Stores {
             const item = this.list[i];
             const members = JSON.parse(item.members);
             this.list[i].loading = 'Show';
-            this.list[i].current_edit_name = members[data.member];
+            this.list[i].current_edit_name = members[_data.member];
           } else if (_data.type === 'unsub' && i !== -1) {
             this.list[i].loading = 'Hide';
             this.list[i].current_edit_name = '';

@@ -22,15 +22,12 @@ import {
  */
 @inject('stores')
 @observer
-export class LoginScreen extends React.Component<RouteProps, IState> {
+export class PasswordScreen extends React.Component<RouteProps, IState> {
   constructor(props: RouteProps) {
     super(props);
     this.state = {
-      type: 'LOGIN',
-      timer: 0,
-      email: '',
-      code: '',
-      password: '',
+      oldPassword: '',
+      newPassword: '',
       status: 'Hide',
       height: 0,
     };
@@ -46,65 +43,29 @@ export class LoginScreen extends React.Component<RouteProps, IState> {
     }
   };
 
-  public changeType = () => {
-    const {type} = this.state;
-    const _type = type === 'LOGIN' ? 'REGISTER' : 'LOGIN';
-    this.setState({type: _type});
-  };
-
-  public sendCode = async () => {
-    const {email} = this.state;
-    if (!email) {
-      return showMessage({type: 'danger', message: '请输入邮箱地址'});
-    }
-    const reg = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-    if (!reg.test(email)) {
-      return showMessage({type: 'danger', message: '请输入正确的邮箱'});
-    }
-    this.setState({status: 'Show'});
-    const res = await apiPost('/send/code', {email});
-    this.setState({status: 'Hide'});
-    if (res && !res.success) {
-      return showMessage({type: 'danger', message: res.error});
-    }
-    if (res && res.success) {
-      this.setState({timer: 1});
-    }
-  };
-
   public submit = async () => {
-    const {type, email, code, password} = this.state;
-    const isLogin = type === 'LOGIN';
-    if (!email) {
-      return showMessage({type: 'danger', message: '请输入邮箱地址'});
+    const {oldPassword, newPassword} = this.state;
+    if (!oldPassword) {
+      return showMessage({type: 'danger', message: '请输入旧密码'});
     }
-    const reg = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-    if (!reg.test(email)) {
-      return showMessage({type: 'danger', message: '请输入正确的邮箱'});
+    if (!newPassword) {
+      return showMessage({type: 'danger', message: '请输入新密码'});
     }
-    if (!password) {
-      return showMessage({type: 'danger', message: '请输入密码'});
-    }
-    if (password.length < 6) {
+    if (newPassword.length < 6) {
       return showMessage({type: 'danger', message: '密码为6～12位字母和数字'});
     }
-    if (!isLogin && !code) {
-      return showMessage({type: 'danger', message: '请输入邮箱验证码'});
-    }
-    const url = !isLogin ? '/user/register' : '/user/login';
-    const params = !isLogin
-      ? {email, password, nackname: email, active_code: code}
-      : {email, password};
     this.setState({status: 'Show'});
-    const res = await apiPost<{token: string; nickname: string}>(url, params);
+    const res = await apiPost('/user/passeord', {
+      old_password: oldPassword,
+      new_password: newPassword,
+    });
     this.setState({status: 'Hide'});
     if (res && !res.success) {
       return showMessage({type: 'danger', message: res.error});
     }
     if (res && res.success) {
-      await cookies.save('token', res.data.token);
-      this.props.stores.changeEmail(email, res.data.nickname);
-      this.props.navigation.navigate('Main');
+      cookies.save('token', '');
+      this.props.navigation.navigate('Login');
     }
   };
 
@@ -122,11 +83,14 @@ export class LoginScreen extends React.Component<RouteProps, IState> {
   }
 
   public render() {
-    const {type, status, height} = this.state;
-    const isLogin = type === 'LOGIN';
+    const {navigation} = this.props;
+    const {status, height} = this.state;
     return (
       <SafeAreaView style={styles.wrapp}>
-        <PublicHeader title={type === 'LOGIN' ? '登录' : '注册'} />
+        <PublicHeader
+          title={'修改密码'}
+          onClickLeft={() => navigation.goBack()}
+        />
         <PublicView status={status} style={styles.main}>
           <View style={{backgroundColor: '#2B2B2D'}}>
             <View style={styles.item}>
@@ -134,53 +98,24 @@ export class LoginScreen extends React.Component<RouteProps, IState> {
               <TextInput
                 autoFocus={true}
                 style={styles.item_input}
-                placeholder={'邮箱帐号'}
+                placeholder={'请输入旧密码'}
                 placeholderTextColor={'rgba(255, 255, 255, .5)'}
-                onChangeText={(text) => this.setState({email: text})}
+                onChangeText={(text) => this.setState({oldPassword: text})}
               />
             </View>
             <View style={styles.item_line} />
-            {isLogin ? null : (
-              <View style={styles.item}>
-                <Image style={styles.item_icon} source={icons.code} />
-                <TextInput
-                  style={styles.item_input}
-                  placeholder={'邮箱验证码'}
-                  placeholderTextColor={'rgba(255, 255, 255, .5)'}
-                  keyboardType={'numeric'}
-                  onChangeText={(text) => this.setState({code: text})}
-                />
-                <TouchableOpacity
-                  disabled={!!this.state.timer}
-                  style={styles.item_button}
-                  onPress={() => {}}>
-                  <Text style={styles.item_button_text}>
-                    {this.state.timer ? `已发送` : '发送'}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            )}
-            {isLogin ? null : <View style={styles.item_line} />}
             <View style={styles.item}>
               <Image style={styles.password} source={icons.password} />
               <TextInput
                 style={styles.item_input}
-                placeholder={'密码'}
+                placeholder={'请输入新密码'}
                 placeholderTextColor={'rgba(255, 255, 255, .5)'}
-                onChangeText={(text) => this.setState({password: text})}
+                onChangeText={(text) => this.setState({newPassword: text})}
               />
             </View>
           </View>
-          <View style={styles.register}>
-            <View style={{flex: 1}} />
-            <Text style={styles.register_right} onPress={this.changeType}>
-              {isLogin ? '没有账号？立即注册' : '已经账号？去登录'}
-            </Text>
-          </View>
           <TouchableOpacity style={styles.footer_button} onPress={this.submit}>
-            <Text style={styles.footer_button_text}>
-              {isLogin ? '登录' : '注册'}
-            </Text>
+            <Text style={styles.footer_button_text}>{'提交'}</Text>
           </TouchableOpacity>
         </PublicView>
         {Platform.OS === 'ios' ? (
@@ -192,11 +127,8 @@ export class LoginScreen extends React.Component<RouteProps, IState> {
 }
 
 type IState = {
-  type: 'LOGIN' | 'REGISTER';
-  timer: number;
-  email: string;
-  code: string;
-  password: string;
+  oldPassword: string;
+  newPassword: string;
   status: ViewStatus;
   height: number;
 };
@@ -265,19 +197,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 4,
     flexDirection: 'row',
+    marginTop: 10,
   },
   footer_button_text: {
     color: '#fff',
     fontSize: 16,
-  },
-  register: {
-    height: 48,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  register_right: {
-    color: '#fff',
-    fontSize: 14,
   },
 });
