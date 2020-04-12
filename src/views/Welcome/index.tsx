@@ -65,14 +65,16 @@ export class WelcomeScreen extends React.Component<RouteProps> {
   public render() {
     const {duration} = this.state;
     const {width, height} = Dimensions.get('window');
-    const source =
-      Platform.OS === 'ios'
-        ? {
-            uri: `https://bing.ioliu.cn/v1/rand?w=${width}&h=${height}`,
-          }
-        : icons.rand;
+    // const source =
+    //   Platform.OS === 'ios'
+    //     ? {
+    //         uri: `https://bing.ioliu.cn/v1/rand?w=${width}&h=${height}`,
+    //       }
+    //     : icons.rand;
     return (
-      <ImageBackground style={[styles.wrapp, {width, height}]} source={source}>
+      <ImageBackground
+        style={[styles.wrapp, {width, height}]}
+        source={icons.rand}>
         <SafeAreaView style={{flex: 1}}>
           <View style={styles.wrapp_head}>
             <View style={{flex: 1}} />
