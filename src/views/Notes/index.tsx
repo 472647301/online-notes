@@ -135,7 +135,9 @@ export class NotesScreen extends React.Component<RouteProps> {
                         ? `${e.current_edit_name}正在编辑...`
                         : ''
                     }>
-                    <View style={styles.item_wrap}>
+                    <TouchableOpacity
+                      style={styles.item_wrap}
+                      onPress={() => navigation.navigate('Details', {item: e})}>
                       <Text style={styles.item_title} numberOfLines={1}>
                         {e.title}
                       </Text>
@@ -143,7 +145,7 @@ export class NotesScreen extends React.Component<RouteProps> {
                         {'  '}
                         {e.content}
                       </Text>
-                    </View>
+                    </TouchableOpacity>
                     {e.author === stores.email ? (
                       <View style={styles.item_footer}>
                         <TouchableOpacity
@@ -222,7 +224,7 @@ const styles = StyleSheet.create({
     height: 77,
   },
   item: {
-    height: 125,
+    height: 135,
     marginBottom: 15,
     marginLeft: 15,
     marginRight: 15,

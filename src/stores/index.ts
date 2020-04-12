@@ -10,6 +10,7 @@ class Stores {
   @observable list: Array<ItemT> = [];
   private timer: number | null = null;
   @observable socket: WebSocket | null = null;
+  @observable readyState = -1;
   @observable account_event: {[key: string]: string} = {};
   @observable email = '';
   @observable token = '';
@@ -38,11 +39,18 @@ class Stores {
     this.nickname = nickname;
     cookies.load('token').then((res) => {
       this.token = res;
+      if (this.token) {
+        const params = {
+          event: 'account',
+          data: {type: 'sub', token: this.token},
+        };
+        this.send(JSON.stringify(params));
+      }
     });
   }
 
   @computed get webSocketStatus() {
-    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+    if (this.socket && this.readyState === WebSocket.OPEN) {
       return true;
     }
     return false;
@@ -52,12 +60,20 @@ class Stores {
     if (this.socket) {
       return;
     }
-    const url = 'http://localhost:3000/websocket';
+    const url = 'ws://notes.zhuwenbo.cc/api/websocket';
     this.socket = new WebSocket(url);
+    this.readyState = this.socket.readyState;
     this.socket.onopen = async () => {
+      if (this.timer) {
+        clearInterval(this.timer);
+        this.timer = null;
+      }
+      this.readyState = this.socket?.readyState || -1;
       const token = await cookies.load('token');
-      const params = {event: 'account', data: {type: 'sub', token}};
-      this.send(JSON.stringify(params));
+      if (token) {
+        const params = {event: 'account', data: {type: 'sub', token}};
+        this.send(JSON.stringify(params));
+      }
       console.log(' >> WebSocket open...');
     };
     this.socket.onmessage = (evt) => {
@@ -89,6 +105,7 @@ class Stores {
     };
     this.socket.onclose = () => {
       this.socket = null;
+      this.readyState = -1;
       if (!this.timer) {
         this.reconnection();
       }
@@ -98,7 +115,7 @@ class Stores {
   }
 
   @action send(params: string) {
-    if (this.socket) {
+    if (this.socket && this.readyState === WebSocket.OPEN) {
       console.log(' >> ws send:', params);
       this.socket.send(params);
     }

@@ -137,12 +137,15 @@ export class UsersScreen extends React.Component<RouteProps> {
                   style={[
                     styles.item_right_text,
                     {
-                      color: Object.keys(stores.account_event).length
-                        ? '#4ECD73'
-                        : '#FF2D55',
+                      color:
+                        stores.webSocketStatus &&
+                        Object.keys(stores.account_event).length
+                          ? '#4ECD73'
+                          : '#FF2D55',
                     },
                   ]}>
-                  {Object.keys(stores.account_event).length
+                  {stores.webSocketStatus &&
+                  Object.keys(stores.account_event).length
                     ? '已订阅'
                     : '未订阅'}
                 </Text>

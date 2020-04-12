@@ -16,6 +16,7 @@ import {
   KeyboardEvent,
   Keyboard,
 } from 'react-native';
+import md5 from 'blueimp-md5';
 
 /**
  * Template
@@ -56,8 +57,8 @@ export class PasswordScreen extends React.Component<RouteProps, IState> {
     }
     this.setState({status: 'Show'});
     const res = await apiPost('/user/passeord', {
-      old_password: oldPassword,
-      new_password: newPassword,
+      old_password: md5(oldPassword),
+      new_password: md5(newPassword),
     });
     this.setState({status: 'Hide'});
     if (res && !res.success) {

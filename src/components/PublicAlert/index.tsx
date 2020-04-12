@@ -90,7 +90,7 @@ export class AlertText extends React.PureComponent<IAlertText> {
 
 const styles = StyleSheet.create({
   pop_up: {
-    width: 280,
+    width: 300,
     backgroundColor: '#fff',
     borderRadius: 8,
   },
@@ -107,10 +107,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   content: {
-    marginLeft: 18,
-    marginRight: 18,
+    marginLeft: 15,
+    marginRight: 15,
     marginTop: 20,
-    marginBottom: 30,
+    marginBottom: 20,
   },
   btn_wrap: {
     flexDirection: 'row',
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   },
   btn: {
     flex: 1,
-    height: 54,
+    height: 45,
     alignItems: 'center',
     justifyContent: 'center',
   },

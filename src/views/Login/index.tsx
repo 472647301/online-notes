@@ -16,6 +16,7 @@ import {
   KeyboardEvent,
   Keyboard,
 } from 'react-native';
+import md5 from 'blueimp-md5';
 
 /**
  * Template
@@ -93,8 +94,8 @@ export class LoginScreen extends React.Component<RouteProps, IState> {
     }
     const url = !isLogin ? '/user/register' : '/user/login';
     const params = !isLogin
-      ? {email, password, nackname: email, active_code: code}
-      : {email, password};
+      ? {email, password: md5(password), nickname: email, active_code: code}
+      : {email, password: md5(password)};
     this.setState({status: 'Show'});
     const res = await apiPost<{token: string; nickname: string}>(url, params);
     this.setState({status: 'Hide'});
@@ -153,7 +154,7 @@ export class LoginScreen extends React.Component<RouteProps, IState> {
                 <TouchableOpacity
                   disabled={!!this.state.timer}
                   style={styles.item_button}
-                  onPress={() => {}}>
+                  onPress={this.sendCode}>
                   <Text style={styles.item_button_text}>
                     {this.state.timer ? `已发送` : '发送'}
                   </Text>

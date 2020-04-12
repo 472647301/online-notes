@@ -16,4 +16,5 @@ export const icons = {
   icon_x: require('./source/icon_x.png'),
   edit: require('./source/edit.png'),
   arrow_right: require('./source/arrow_right.png'),
+  rand: require('./source/rand.png'),
 };

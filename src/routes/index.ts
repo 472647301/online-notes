@@ -7,6 +7,7 @@ import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 import {createBottomTabNavigator} from 'react-navigation-tabs';
 import {PasswordScreen} from '../views/Password';
+import {DetailsScreen} from '../views/Details';
 
 const ButtomNavigator = createBottomTabNavigator(
   {
@@ -39,6 +40,7 @@ const MainNavigator = createStackNavigator(
     Create: CreateScreen,
     Welcome: WelcomeScreen,
     Password: PasswordScreen,
+    Details: DetailsScreen,
   },
   {
     headerMode: 'none',

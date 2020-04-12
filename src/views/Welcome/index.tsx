@@ -1,10 +1,11 @@
 import React from 'react';
-import {StyleSheet, Dimensions} from 'react-native';
+import {StyleSheet, Dimensions, Platform} from 'react-native';
 import {ImageBackground, TouchableOpacity, SafeAreaView} from 'react-native';
 import {ActivityIndicator, View, Text} from 'react-native';
 import {RouteProps} from '../../typings/routes';
 import {inject, observer} from 'mobx-react';
 import {apiGet} from '../../api';
+import {icons} from '../../icons';
 
 /**
  * Template
@@ -64,12 +65,14 @@ export class WelcomeScreen extends React.Component<RouteProps> {
   public render() {
     const {duration} = this.state;
     const {width, height} = Dimensions.get('window');
+    const source =
+      Platform.OS === 'ios'
+        ? {
+            uri: `https://bing.ioliu.cn/v1/rand?w=${width}&h=${height}`,
+          }
+        : icons.rand;
     return (
-      <ImageBackground
-        style={styles.wrapp}
-        source={{
-          uri: `https://bing.ioliu.cn/v1/rand?w=${width}&h=${height}`,
-        }}>
+      <ImageBackground style={[styles.wrapp, {width, height}]} source={source}>
         <SafeAreaView style={{flex: 1}}>
           <View style={styles.wrapp_head}>
             <View style={{flex: 1}} />
