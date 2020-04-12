@@ -123,7 +123,7 @@ export class UsersScreen extends React.Component<RouteProps> {
                     styles.item_right_text,
                     {color: stores.webSocketStatus ? '#4ECD73' : '#FF2D55'},
                   ]}>
-                  {stores.webSocketStatus ? '已连接' : '未连接'}
+                  {stores.webSocketStatus ? '已连接' : '正在重连...'}
                 </Text>
               </View>
             </View>

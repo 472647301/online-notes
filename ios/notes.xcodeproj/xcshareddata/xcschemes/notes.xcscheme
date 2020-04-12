@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "notes.app"
+               BuildableName = "&#x67d0;&#x67d0;&#x7b14;&#x8bb0;.app"
                BlueprintName = "notes"
                ReferencedContainer = "container:notes.xcodeproj">
             </BuildableReference>
@@ -55,7 +55,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "notes.app"
+            BuildableName = "&#x67d0;&#x67d0;&#x7b14;&#x8bb0;.app"
             BlueprintName = "notes"
             ReferencedContainer = "container:notes.xcodeproj">
          </BuildableReference>
@@ -72,7 +72,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "notes.app"
+            BuildableName = "&#x67d0;&#x67d0;&#x7b14;&#x8bb0;.app"
             BlueprintName = "notes"
             ReferencedContainer = "container:notes.xcodeproj">
          </BuildableReference>

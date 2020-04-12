@@ -20,23 +20,29 @@ export class DetailsScreen extends React.Component<RouteProps<{item: ItemT}>> {
       <SafeAreaView style={styles.wrapp}>
         <PublicHeader
           title={item.title}
-          onClickRight={() => navigation.goBack()}
+          onClickLeft={() => navigation.goBack()}
         />
         <View style={styles.main}>
+          <Text style={[styles.author, {color: '#FF5959'}]}>
+            {members[item.author]}
+            {`<${item.author}>`}
+          </Text>
+          <Text style={styles.author}>创建于 {item.created_at}</Text>
           <ScrollView style={styles.scroll}>
-            <Text style={styles.author}>
-              {members[item.author]}
-              {`<${item.author}>`} 创建于 {item.created_at}
-            </Text>
             <Text style={styles.scroll_text}>
               {'  '}
               {item.content}
             </Text>
           </ScrollView>
           {item.update_name ? (
-            <Text style={styles.update_name}>
-              {item.update_name} 最后编辑于 {item.updated_at}
-            </Text>
+            <React.Fragment>
+              <Text style={[styles.update_name, {color: '#4392F1'}]}>
+                {item.update_name}
+              </Text>
+              <Text style={styles.update_name}>
+                最后编辑于 {item.updated_at}
+              </Text>
+            </React.Fragment>
           ) : null}
         </View>
       </SafeAreaView>
@@ -58,8 +64,8 @@ const styles = StyleSheet.create({
   scroll: {
     flex: 1,
     paddingTop: 20,
-    paddingLeft: 15,
-    paddingRight: 15,
+    paddingLeft: 30,
+    paddingRight: 30,
     paddingBottom: 20,
   },
   scroll_text: {
@@ -69,13 +75,13 @@ const styles = StyleSheet.create({
   },
   author: {
     paddingLeft: 15,
-    lineHeight: 28,
+    // lineHeight: 28,
     fontSize: 14,
     color: '#9B9B9B',
   },
   update_name: {
-    paddingLeft: 15,
-    lineHeight: 28,
+    paddingRight: 15,
+    // lineHeight: 28,
     fontSize: 14,
     color: '#9B9B9B',
     textAlign: 'right',
