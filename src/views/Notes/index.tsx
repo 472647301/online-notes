@@ -103,8 +103,10 @@ export class NotesScreen extends React.Component<RouteProps> {
   };
 
   public componentDidMount() {
-    this.props.stores.fetchNotesList().then(() => {
-      this.setState({loading: 'Hide'});
+    this.props.navigation.addListener('willFocus', () => {
+      this.props.stores.fetchNotesList().then(() => {
+        this.setState({loading: 'Hide'});
+      });
     });
   }
 

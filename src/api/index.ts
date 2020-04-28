@@ -5,7 +5,8 @@ import {showMessage} from 'react-native-flash-message';
 
 const api = axios.create({
   timeout: 30000,
-  baseURL: 'http://notes.zhuwenbo.cc/api',
+  // baseURL: 'http://notes.zhuwenbo.cc/api',
+  baseURL: 'http://localhost:3000'
 });
 
 // 添加自定义实例请求拦截器
