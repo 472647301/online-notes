@@ -15,7 +15,7 @@
     "@react-native-community/async-storage": "^1.9.0",
     "@react-native-community/netinfo": "^5.7.0",
     "add": "^2.0.6",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "blueimp-md5": "^2.13.0",
     "mobx": "^5.15.4",
     "mobx-react": "^6.2.2",
